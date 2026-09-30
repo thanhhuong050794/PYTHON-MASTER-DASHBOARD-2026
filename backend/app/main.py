@@ -2,8 +2,10 @@
 
     cd backend && uv run uvicorn app.main:app --reload --port 8000
 """
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+# 1. Tạo app TRƯỚC
+app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
