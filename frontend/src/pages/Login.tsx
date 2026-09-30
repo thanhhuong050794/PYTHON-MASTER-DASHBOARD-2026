@@ -39,7 +39,7 @@ export default function Login() {
           </div>
           <div>
             <div className="brand-title">NEU Admissions BI</div>
-            <div className="brand-sub">Tuyển sinh Python Master · PTIT</div>
+            <div className="brand-sub">Tuyển sinh Python Master</div>
           </div>
         </div>
         <div className="stack" style={{ gap: 16 }}>
