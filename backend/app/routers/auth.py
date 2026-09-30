@@ -20,6 +20,19 @@ from ..security import (
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
+# Cookie cross-site (Render: fe và be khác subdomain) bắt buộc SameSite=None + Secure=True.
+# Localhost chạy HTTP nên phải để SameSite=Lax + Secure=False.
+_SAMESITE = "none" if settings.cookie_secure else "lax"
+_SECURE = settings.cookie_secure
+_COOKIE_KW = dict(
+    max_age=settings.jwt_expire_hours * 3600,
+    httponly=True,
+    secure=_SECURE,
+    samesite=_SAMESITE,
+    path="/",
+)
+
+
 class LoginIn(BaseModel):
     username: str = Field(min_length=1, max_length=64)
     password: str = Field(min_length=1, max_length=128)
@@ -62,21 +75,19 @@ def login(body: LoginIn, request: Request, response: Response):
     login_throttle.reset(key)
     db.users.update_one({"_id": user["_id"]}, {"$set": {"last_login": datetime.now(timezone.utc)}})
     audit("login", username, request)
-    response.set_cookie(
-        COOKIE_NAME,
-        create_token(user),
-        max_age=settings.jwt_expire_hours * 3600,
-        httponly=True,
-        secure=settings.cookie_secure,
-        samesite="lax",
-        path="/",
-    )
+    response.set_cookie(COOKIE_NAME, create_token(user), **_COOKIE_KW)
     return current.public()
 
 
 @router.post("/logout")
 def logout(response: Response):
-    response.delete_cookie(COOKIE_NAME, path="/")
+    response.delete_cookie(
+        COOKIE_NAME,
+        path="/",
+        secure=_SECURE,
+        httponly=True,
+        samesite=_SAMESITE,
+    )
     return {"ok": True}
 
 
@@ -99,13 +110,5 @@ def change_password(body: ChangePasswordIn, request: Request, response: Response
     )
     audit("change_password", user.username, request)
     # Phiên cũ bị vô hiệu (token_version tăng) → cấp cookie mới cho phiên hiện tại
-    response.set_cookie(
-        COOKIE_NAME,
-        create_token(db.users.find_one({"_id": doc["_id"]})),
-        max_age=settings.jwt_expire_hours * 3600,
-        httponly=True,
-        secure=settings.cookie_secure,
-        samesite="lax",
-        path="/",
-    )
+    response.set_cookie(COOKIE_NAME, create_token(db.users.find_one({"_id": doc["_id"]})), **_COOKIE_KW)
     return {"ok": True}
