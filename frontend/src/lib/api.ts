@@ -10,7 +10,7 @@ type Params = Record<string, string | number | boolean | null | undefined>;
 
 // Local:  VITE_API_URL không set → API_BASE = "" → gọi "/api/..." → Vite proxy chuyển tới localhost:8000
 // Render: VITE_API_URL = "https://python-master-dashboard-2026.onrender.com" → gọi thẳng backend
-const API_BASE = import.meta.env.VITE_API_URL ?? "";
+const API_BASE = "";
 
 export function qs(params: Params): string {
   const sp = new URLSearchParams();

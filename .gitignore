@@ -2,11 +2,11 @@
 backend/.venv/
 __pycache__/
 frontend/node_modules/
-frontend/dist/
+# frontend/dist/          
 *.tsbuildinfo
 .playwright-mcp/
 
-# Dữ liệu nguồn (đã nạp vào MongoDB) — không đưa lên git
+# Dữ liệu nguồn (đã nạp vào MongoDB) - không đưa lên git
 Data-20260929T164510Z-1-001/
 Data-*.zip
 *.zip
