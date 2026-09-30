@@ -3,6 +3,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../lib/auth";
 import { useApi, useScope } from "../lib/hooks";
 import { applyThemeMode, getThemeMode, type ThemeMode } from "../lib/theme";
+import { ExportBar } from "./ExportBar";
 import { Icon } from "./Icons";
 
 export const NAV = [
@@ -106,7 +107,10 @@ export function Layout({ title, children }: { title: string; children: ReactNode
           <div className="spacer" />
           {user.role === "admin" && loc.pathname !== "/quan-tri" && loc.pathname !== "/tai-khoan" && <ScopeSelect />}
         </header>
-        <main className="content">{children}</main>
+        <main className="content">
+          {user.modules.includes("overview") && loc.pathname !== "/quan-tri" && loc.pathname !== "/tai-khoan" && <ExportBar />}
+          {children}
+        </main>
       </div>
     </div>
   );

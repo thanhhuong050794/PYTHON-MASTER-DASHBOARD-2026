@@ -129,6 +129,24 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
 .content { padding: 20px 28px 48px; display: grid; gap: 16px; max-width: 1480px; width: 100%; }
 .page-desc { color: var(--text-2); max-width: 900px; margin-top: -4px; }
 
+.export-bar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  padding: 10px 14px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+}
+.export-label { color: var(--text-2); font-weight: 500; margin-right: 4px; }
+.export-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 32px; padding: 0 14px; border: 0; border-radius: 999px;
+  color: #fff; cursor: pointer; font-weight: 600; font-size: 13.5px; white-space: nowrap;
+}
+.export-btn:hover { filter: brightness(1.08); }
+.export-btn:disabled { opacity: 0.6; cursor: wait; }
+.export-btn svg { width: 15px; height: 15px; }
+.export-excel { background: #15803d; }
+.export-word { background: #1d4ed8; }
+.export-pdf { background: #dc2626; }
+
 /* ───────── Controls ───────── */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;

@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from ..db import get_db
 from ..filters import ContactFilters, add_in, effective_partner, scope_match
+from ..reports import report_response
 from ..security import CurrentUser, require_module
 from .contacts import contact_summary
 from .marketing import marketing_summary
@@ -63,3 +64,13 @@ def overview(f: ContactFilters = Depends(), user: CurrentUser = Depends(require_
     if user.is_admin and not viewing:
         out["pipeline"] = db.meta.find_one({"_id": "pipeline"}, {"_id": 0})
     return out
+
+
+@router.get("/export")
+def export_overview(
+    format: str = Query("xlsx", pattern="^(xlsx|docx|pdf)$"),
+    f: ContactFilters = Depends(),
+    user: CurrentUser = Depends(require_module("overview")),
+):
+    """Xuất báo cáo tổng quan (Excel / Word / PDF) theo đúng bộ lọc và phạm vi đối tác đang xem."""
+    return report_response(format, overview(f, user), user, f)

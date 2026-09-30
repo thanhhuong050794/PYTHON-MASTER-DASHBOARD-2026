@@ -50,3 +50,34 @@ export async function api<T>(path: string, init?: RequestInit & { json?: unknown
 export function downloadUrl(path: string, params: Params): string {
   return `/api${path}${qs({ ...params, format: "csv" })}`;
 }
+
+/** Tải file nhị phân (Excel/Word/PDF) kèm cookie đăng nhập; báo lỗi nếu API từ chối. */
+export async function downloadFile(path: string, params: Params = {}): Promise<void> {
+  const res = await fetch(`/api${path}${qs(params)}`, { credentials: "same-origin", headers: { Accept: "*/*" } });
+  if (!res.ok) {
+    let message = `Lỗi ${res.status}`;
+    try {
+      const body = await res.json();
+      if (typeof body.detail === "string") message = body.detail;
+    } catch {
+      /* không phải JSON */
+    }
+    if (res.status === 401 && !path.startsWith("/auth/login")) {
+      window.dispatchEvent(new Event("auth:expired"));
+    }
+    throw new ApiError(res.status, message);
+  }
+  const blob = await res.blob();
+  const cd = res.headers.get("Content-Disposition") ?? "";
+  const star = /filename\*=UTF-8''([^;]+)/i.exec(cd);
+  const quoted = /filename="([^"]+)"/i.exec(cd);
+  const name = decodeURIComponent(star?.[1] ?? quoted?.[1] ?? "bao_cao");
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
