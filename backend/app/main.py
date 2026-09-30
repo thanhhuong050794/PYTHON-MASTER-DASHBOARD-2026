@@ -2,7 +2,18 @@
 
     cd backend && uv run uvicorn app.main:app --reload --port 8000
 """
+from fastapi.middleware.cors import CORSMiddleware
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "https://neu-admissions-dashboard.onrender.com",
+    ],
+    allow_credentials=True,   # BẮT BUỘC true để gửi cookie đăng nhập
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
