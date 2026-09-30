@@ -52,7 +52,9 @@ async def security_headers(request: Request, call_next):
 def health():
     get_db().client.admin.command("ping")
     return {"ok": True, "db": settings.mongo_db_name}
-
+@app.head("/api/health")
+def health_head():
+    return Response(status_code=200)
 
 # Phục vụ bản build của frontend (npm run build) — SPA fallback về index.html
 dist = settings.frontend_dist
