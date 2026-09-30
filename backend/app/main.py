@@ -2,10 +2,24 @@
 
     cd backend && uv run uvicorn app.main:app --reload --port 8000
 """
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-# 1. Tạo app TRƯỚC
-app = FastAPI()
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+
+from .config import settings
+from .db import get_db
+from .routers import admin, auth, contacts, exams, leads, marketing, misc, overview
+
+# 1. Tạo app MỘT LẦN DUY NHẤT
+app = FastAPI(
+    title="NEU Admissions BI",
+    version="1.0.0",
+    docs_url="/api/docs",
+    openapi_url="/api/openapi.json",
+)
+
+# 2. CORS middleware — phải add trước khi include router
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -16,17 +30,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-from fastapi import FastAPI, Request
-from fastapi.responses import FileResponse, JSONResponse
-from fastapi.staticfiles import StaticFiles
 
-from .config import settings
-from .db import get_db
-from .routers import admin, auth, contacts, exams, leads, marketing, misc, overview
-
-app = FastAPI(title="NEU Admissions BI", version="1.0.0", docs_url="/api/docs", openapi_url="/api/openapi.json")
-
-for r in (auth.router, admin.router, overview.router, contacts.router, marketing.router, leads.router, exams.router, misc.router):
+# 3. Include routers
+for r in (auth.router, admin.router, overview.router, contacts.router,
+          marketing.router, leads.router, exams.router, misc.router):
     app.include_router(r)
 
 
