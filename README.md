@@ -1,4 +1,4 @@
-# NEU Admissions BI — Dashboard tuyển sinh có đăng nhập & phân quyền theo đối tác
+# NEU Admissions BI - Dashboard có đăng nhập & phân quyền theo đối tác
 
 - **Backend:** Python · FastAPI · PyMongo (`backend/`)
 - **Frontend:** React · TypeScript · Vite · ECharts (`frontend/`)
