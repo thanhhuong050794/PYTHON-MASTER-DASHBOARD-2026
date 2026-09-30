@@ -8,6 +8,10 @@ export class ApiError extends Error {
 
 type Params = Record<string, string | number | boolean | null | undefined>;
 
+// Local:  VITE_API_URL không set → API_BASE = "" → gọi "/api/..." → Vite proxy chuyển tới localhost:8000
+// Render: VITE_API_URL = "https://python-master-dashboard-2026.onrender.com" → gọi thẳng backend
+const API_BASE = import.meta.env.VITE_API_URL ?? "";
+
 export function qs(params: Params): string {
   const sp = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) {
@@ -20,8 +24,8 @@ export function qs(params: Params): string {
 
 export async function api<T>(path: string, init?: RequestInit & { json?: unknown }): Promise<T> {
   const { json, ...rest } = init ?? {};
-  const res = await fetch(`/api${path}`, {
-    credentials: "same-origin",
+  const res = await fetch(`${API_BASE}/api${path}`, {
+    credentials: "include",
     ...rest,
     headers: {
       Accept: "application/json",
@@ -48,12 +52,12 @@ export async function api<T>(path: string, init?: RequestInit & { json?: unknown
 }
 
 export function downloadUrl(path: string, params: Params): string {
-  return `/api${path}${qs({ ...params, format: "csv" })}`;
+  return `${API_BASE}/api${path}${qs({ ...params, format: "csv" })}`;
 }
 
 /** Tải file nhị phân (Excel/Word/PDF) kèm cookie đăng nhập; báo lỗi nếu API từ chối. */
 export async function downloadFile(path: string, params: Params = {}): Promise<void> {
-  const res = await fetch(`/api${path}${qs(params)}`, { credentials: "same-origin", headers: { Accept: "*/*" } });
+  const res = await fetch(`${API_BASE}/api${path}${qs(params)}`, { credentials: "include", headers: { Accept: "*/*" } });
   if (!res.ok) {
     let message = `Lỗi ${res.status}`;
     try {
