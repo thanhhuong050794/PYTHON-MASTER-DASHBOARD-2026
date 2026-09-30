@@ -2,7 +2,7 @@
 
     cd backend && uv run uvicorn app.main:app --reload --port 8000
 """
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
